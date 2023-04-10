@@ -1,4 +1,5 @@
 from tabulate import tabulate
+import csv
 
 class Matrix:
     def __init__(self, *args):
@@ -7,7 +8,7 @@ class Matrix:
         for column in args:
             self.matrix[0].append(column)
 
-    def list(self):
+    def extract(self):
         return self.matrix
     
     def add_row(self, *args):
@@ -77,6 +78,26 @@ class Matrix:
 
 
         return locations
+    
+    def export(self , path):
+        file = open(path, 'w')
+        writer_obj = csv.writer(file)
+        writer_obj.writerows(self.matrix)
+        file.close()
+
+    def import_csv(self , path):
+        csv_matrix = []
+        file = open(path, 'r')
+        reader = csv.reader(file)
+        for row in reader:
+            csv_matrix.append(row)
+        file.close()
+
+        self.matrix = csv_matrix
+
+    def import_matrix(self , matrix):
+        self.matrix = matrix
+        
 
 
     def printf(self, format="simple"):
