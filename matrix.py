@@ -46,6 +46,18 @@ class Matrix:
         row_no = self.matrix[row]
         row_no[column-1] = None
 
+    def delete_row(self, row):
+        self.matrix.remove(self.matrix[row])
+    
+    def delete_column(self, column):
+        column_index = self.matrix[0].index(column)
+
+        row_count = 0
+
+        for rows in self.matrix:
+            rows.remove(self.matrix[row_count][column_index])
+            row_count += 1
+
     def search(self , value):
         locations = [["row" , "column"]]
 
