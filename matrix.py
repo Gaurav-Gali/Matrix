@@ -9,6 +9,9 @@ class Matrix:
         for column in args:
             self.matrix[0].append(column)
     
+    def reset(self):
+        self.matrix = [[]]
+    
     def lock(self):
         self.locked = True
     
@@ -315,6 +318,7 @@ class Matrix:
             ["★  insert" , "(value , row , column)"],
             ["★  fetch" , "(row , column)"],
             ["remove" , "(row , column)"],
+            ["reset" , "() : resets the matrix"],
             ["★  search" , "(search item)"],
             ["★  lock" , "() : locks the matrix"],
             ["★  unlock" , "() : unlocks the matrix"],
