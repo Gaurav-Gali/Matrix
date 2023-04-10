@@ -1,4 +1,8 @@
-Name,Age,Gender
-PersonOne,17,Male
-PersonOne,17,Female
-PersonOne,17,Other
+Srno,Item,Quantity,Discount %,Price ₹,Total ₹
+1,Bag,10,15,25.5,251.175
+2,Shoe,12,20,17,200.6
+3,Wallet,5,50,50,225.0
+4,Purse,100,12,10,998.8
+5,Ball,12,12,24,285.12
+6,Pen,23,12,50,1150
+7,---,---,---,---,3110.6949999999997
