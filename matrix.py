@@ -1,74 +1,77 @@
 from tabulate import tabulate
 
 class Matrix:
-    new_matrix = []
-
-    def create(*args):
-        row_matrix = []
-
-        row_matrix.append("Sr_No")
-        for column_header in args:
-            row_matrix.append(column_header)
-
-        Matrix.new_matrix.append(row_matrix)
-
-        return Matrix.new_matrix
-    
-    def add_row(matrix,*args):
-        row_matrix = []
-        no_of_rows = len(matrix)-1
-        row_matrix.append(no_of_rows+1)
-
-        for items in args:
-            row_matrix.append(items)
-
-        matrix.append(row_matrix)
-    
-    def add_rows(matrix , values):
-        for item in values:
-            no_of_rows = len(matrix)-1
-            matrix.append([no_of_rows + 1]+item)
-
-
-    
-    def add_column(matrix,header):
-        matrix[0].append(header)
+    def __init__(self, *args):
+        self.matrix = [[]]
         
-        for rows in matrix[1:len(matrix)]:
-            if len(rows) != len(matrix[0]):
+        for column in args:
+            self.matrix[0].append(column)
+    
+    def add_row(self, *args):
+        new_row = []
+        for row_item in args:
+            new_row.append(row_item)
+
+        self.matrix.append(new_row)
+
+    def add_column(self, column):
+        self.matrix[0].append(column)
+
+        for rows in self.matrix[1:len(self.matrix)]:
+            if len(rows) != len(self.matrix[0]):
                 rows.append(None)
 
-    def store(matrix , value , row , column):
-        if row == 0 or column == 0:
-            return None
+    def insert(self, value , row , column):
+        row_no = self.matrix[row]
+        row_no[column-1] = value
+        
+    def fetch(self , row , column):
+        fetched = self.matrix[row][column-1]
+        return fetched
+    
+    def remove(self, row , column):
+        row_no = self.matrix[row]
+        row_no[column-1] = None
 
-        row_matrix = matrix[row]
-        row_matrix[column-1] = value
+    def search(self , value):
+        locations = [["row" , "column"]]
 
-    def get(matrix , row , column):
-        if row == 0 or column == 0:
-            return None
+        for row in range(1 , len(self.matrix)):
+            if value in self.matrix[row]:
+                for item in range(row):
+                    if self.matrix[row][item] == value:
+                        column =  item
+                        locations.append([row,column])
+        
+        return locations
 
-        row_matrix = matrix[row]
-        return row_matrix[column-1]
 
-    def delete_row(matrix , row_no):
-        row = matrix[row_no]
-        matrix.remove(row)
-
-    def printf(matrix , format):
-        options = ["psql" , "fancy_grid"]
-        chosen = ""
-
-        if format == "plain":
-            chosen = options[0]
+    def printf(self, format="simple"):
+        if format == "simple":
+            self.format = "psql"
         elif format == "fancy":
-            chosen = options[1]
-        else:
-            chosen = options[0]
-
+            self.format = "fancy_grid"
+        
         print(
-            tabulate(matrix , headers="firstrow" , tablefmt=chosen)
+            tabulate(
+                self.matrix,
+                headers="firstrow",
+                tablefmt=self.format
+            )
+        )
+
+    def print_data(user_matrix , format="simple"):
+        if format == "simple":
+            formated = "psql"
+        elif format == "fancy":
+            formated = "fancy_grid"
+        
+        print(
+            tabulate(
+                user_matrix,
+                headers="firstrow",
+                tablefmt=formated
+            )
         )
 
     def help():
@@ -81,18 +84,17 @@ class Matrix:
 
         help_data = [
             ["Method" , "Functionality"],
-            ["create" , "(*args) : headers"],
-            ["add_row" , "(matrix , *args) : items"],
-            ["add_rows" , "(matrix , values) : [items]"],
-            ["add_column" , "(matrix , header) : header"],
-            ["store" , "(matrix , value , row , column)"],
-            ["get" , "(matrix , row , column)"],
-            ["delete_row" , "(matrix , row)"],
-            ["printf" , "(matrix , format) : plain/fancy"],
+            ["add_row" , "(*args) : items"],
+            ["add_column" , "(header) : header"],
+            ["insert" , "(value , row , column)"],
+            ["fetch" , "(row , column)"],
+            ["remove" , "(row , column)"],
+            ["search" , "(search item)"],
+            ["printf" , "(format) : plain/fancy"],
+            ["print_data" , "(matrix , format) : plain/fancy"]
             ["help" , "Get Information About Matrix"]
         ]    
 
         print(
             tabulate(help_data , headers="firstrow", tablefmt="fancy_grid")
         )
-
