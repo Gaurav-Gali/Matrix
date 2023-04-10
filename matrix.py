@@ -6,6 +6,9 @@ class Matrix:
         
         for column in args:
             self.matrix[0].append(column)
+
+    def list(self):
+        return self.matrix
     
     def add_row(self, *args):
         new_row = []
@@ -14,12 +17,22 @@ class Matrix:
 
         self.matrix.append(new_row)
 
-    def add_column(self, column):
-        self.matrix[0].append(column)
+    def add_column(self, column , location="last"):
+        if location == "last":
+            self.matrix[0].append(column)
 
-        for rows in self.matrix[1:len(self.matrix)]:
-            if len(rows) != len(self.matrix[0]):
-                rows.append(None)
+            for rows in self.matrix[1:len(self.matrix)]:
+                if len(rows) != len(self.matrix[0]):
+                    rows.append(None)
+
+        else:
+            self.matrix[0].insert(location-1 , column)
+
+            for rows in self.matrix[1:len(self.matrix)]:
+                if len(rows) != len(self.matrix[0]):
+                    rows.insert(location-1,None)
+
+        
 
     def insert(self, value , row , column):
         row_no = self.matrix[row]
@@ -36,13 +49,21 @@ class Matrix:
     def search(self , value):
         locations = [["row" , "column"]]
 
-        for row in range(1 , len(self.matrix)):
-            if value in self.matrix[row]:
-                for item in range(row):
-                    if self.matrix[row][item] == value:
-                        column =  item
-                        locations.append([row,column])
-        
+        row_count = 0
+        column_count = 0
+
+        for row in self.matrix:
+            if value in row:
+                for item in row:
+                    column_count += 1
+                    if item == value:
+                        locations.append([row_count , column_count])
+                
+                column_count = 0
+
+            row_count += 1
+
+
         return locations
 
 
@@ -51,6 +72,9 @@ class Matrix:
             self.format = "psql"
         elif format == "fancy":
             self.format = "fancy_grid"
+        elif format == "raw":
+            print(self.matrix)
+            return
         
         print(
             tabulate(
@@ -60,7 +84,7 @@ class Matrix:
             )
         )
 
-    def print_data(user_matrix , format="simple"):
+    def pretty_print(user_matrix , format="simple"):
         if format == "simple":
             formated = "psql"
         elif format == "fancy":
@@ -91,7 +115,7 @@ class Matrix:
             ["remove" , "(row , column)"],
             ["search" , "(search item)"],
             ["printf" , "(format) : plain/fancy"],
-            ["print_data" , "(matrix , format) : plain/fancy"]
+            ["print_data" , "(matrix , format) : plain/fancy"],
             ["help" , "Get Information About Matrix"]
         ]    
 
