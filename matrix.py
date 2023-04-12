@@ -6,8 +6,12 @@ class Matrix:
         self.matrix = [[]]
         self.locked = False
         
-        for column in args:
-            self.matrix[0].append(column)
+        if len(args) == 1 and type(args[0]) == list:
+            for column in args[0]:
+                self.matrix[0].append(column)
+        else:
+            for column in args:
+                self.matrix[0].append(column)
     
     def reset(self):
         self.matrix = [[]]
@@ -32,6 +36,7 @@ class Matrix:
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
@@ -47,9 +52,9 @@ class Matrix:
         )
 
         if theme == "light":
-            syntax_table = '<table class="table table-hover">' + table[7:len(table)]
+            syntax_table = '<table class="table table-striped table-hover">' + table[7:len(table)]
         elif theme == "dark":
-            syntax_table = '<table class="table table-dark table-hover">' + table[7:len(table)]
+            syntax_table = '<table class="table table-dark table-striped table-hover">' + table[7:len(table)]
 
         syntax_bottom = """
         
@@ -71,8 +76,12 @@ class Matrix:
             return
         
         new_row = []
-        for row_item in args:
-            new_row.append(row_item)
+        if len(args) == 1 and type(args[0]) == list:
+            for row_item in args[0]:
+                new_row.append(row_item)
+        else:
+            for row_item in args:
+                new_row.append(row_item)
 
         self.matrix.append(new_row)
 
@@ -270,6 +279,17 @@ class Matrix:
     def import_matrix(self , matrix):
         self.matrix = matrix
         
+    def gen_table(self , rng , num):
+        self.matrix.append([i for i in range(1,num+1)])
+
+        for i in range(2,rng+1):
+            row = []
+            for j in range(1,num+1):
+                row.append(j*i)
+            
+            self.matrix.append(row)
+
+        
 
 
     def printf(self, format="simple"):
@@ -317,6 +337,7 @@ class Matrix:
             ["★  add_column" , "(header) : header"],
             ["★  insert" , "(value , row , column)"],
             ["★  fetch" , "(row , column)"],
+            ["len" , "() : returns length of matrix"],
             ["remove" , "(row , column)"],
             ["reset" , "() : resets the matrix"],
             ["★  search" , "(search item)"],
