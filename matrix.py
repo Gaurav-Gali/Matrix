@@ -1,32 +1,33 @@
 from tabulate import tabulate
 import csv
 
+
 class Matrix:
     def __init__(self, *args):
         self.matrix = [[]]
-        self.locked = False
-        
+        self.locked = True
+
         if len(args) == 1 and type(args[0]) == list:
             for column in args[0]:
                 self.matrix[0].append(column)
         else:
             for column in args:
                 self.matrix[0].append(column)
-    
+
     def reset(self):
         self.matrix = [[]]
-    
+
     def lock(self):
         self.locked = True
-    
+
     def unlock(self):
         self.locked = False
 
     def export_matrix(self):
         return self.matrix
-    
-    def export_html(self , path , theme="light"):
-        file = open(path , 'w')
+
+    def export_html(self, path, theme="light"):
+        file = open(path, 'w')
 
         syntax_top = """<!DOCTYPE html>
 <html lang="en">
@@ -52,9 +53,11 @@ class Matrix:
         )
 
         if theme == "light":
-            syntax_table = '<table class="table table-striped table-hover">' + table[7:len(table)]
+            syntax_table = '<table class="table table-striped table-hover">' + \
+                table[7:len(table)]
         elif theme == "dark":
-            syntax_table = '<table class="table table-dark table-striped table-hover">' + table[7:len(table)]
+            syntax_table = '<table class="table table-dark table-striped table-hover">' + \
+                table[7:len(table)]
 
         syntax_bottom = """
         
@@ -67,14 +70,14 @@ class Matrix:
         file.write(file_data)
 
         file.close()
-    
+
     def raw_matrix(self):
         self.matrix = self.matrix[1:len(self.matrix)]
-    
+
     def add_row(self, *args):
         if self.locked:
             return
-        
+
         new_row = []
         if len(args) == 1 and type(args[0]) == list:
             for row_item in args[0]:
@@ -85,10 +88,10 @@ class Matrix:
 
         self.matrix.append(new_row)
 
-    def add_column(self, column , location="last" , filler=None):
+    def add_column(self, column, location="last", filler=None):
         if self.locked:
             return
-        
+
         if location == "last":
             self.matrix[0].append(column)
 
@@ -97,16 +100,16 @@ class Matrix:
                     rows.append(filler)
 
         else:
-            self.matrix[0].insert(location-1 , column)
+            self.matrix[0].insert(location-1, column)
 
             for rows in self.matrix[1:len(self.matrix)]:
                 if len(rows) != len(self.matrix[0]):
-                    rows.insert(location-1,None)
+                    rows.insert(location-1, None)
 
-    def row_result(self , row_no , operation="+"):
+    def row_result(self, row_no, operation="+"):
         if self.locked:
             return
-        
+
         row = self.row_data(row_no)
         result = 0
 
@@ -131,10 +134,9 @@ class Matrix:
         else:
             pass
 
-        
         return result
-    
-    def column_result(self , column_name , operation = "+"):
+
+    def column_result(self, column_name, operation="+"):
         column = self.column_data(column_name)
 
         result = 0
@@ -160,15 +162,27 @@ class Matrix:
         else:
             pass
 
-        
         return result
 
-    
-    def len(self):
-        return len(self.matrix)-1
+    def len(self, type="both"):
+        result = []
+        row_length = len(self.matrix)
+        col_length = len(self.matrix[0])
+
+        if type == "both":
+            result.append(row_length)
+            result.append(col_length)
+        elif type == "row":
+            result = row_length
+        elif type == "column":
+            result = col_length
+        else:
+            result = None
+
+        return result
 
     def row_data(self, row):
-        row_count = 1
+        row_count = 0
         for rows in self.matrix:
             if row_count == row:
                 return self.matrix[row]
@@ -185,35 +199,37 @@ class Matrix:
 
         return column_data
 
+    def header_data(self):
+        return self.matrix[0]
 
-    def insert(self, value , row , column):
+    def insert(self, value, row, column):
         if self.locked:
             return
-        
+
         row_no = self.matrix[row]
         row_no[column-1] = value
-        
-    def fetch(self , row , column):
+
+    def fetch(self, row, column):
         fetched = self.matrix[row][column-1]
         return fetched
-    
-    def remove(self, row , column):
+
+    def remove(self, row, column):
         if self.locked:
             return
-        
+
         row_no = self.matrix[row]
         row_no[column-1] = None
 
     def delete_row(self, row):
         if self.locked:
             return
-        
+
         self.matrix.remove(self.matrix[row])
-    
+
     def delete_column(self, column):
         if self.locked:
             return
-        
+
         column_index = self.matrix[0].index(column)
 
         row_count = 0
@@ -225,8 +241,8 @@ class Matrix:
     def serialize(self):
         if self.locked:
             return
-        
-        self.add_column("Srno" , 1)
+
+        self.add_column("Srno", 1)
         row_count = 0
         for rows in self.matrix:
             if row_count == 0:
@@ -234,13 +250,13 @@ class Matrix:
             else:
                 rows[0] = row_count
                 row_count += 1
-    
-    def count(self , value):
+
+    def count(self, value):
         locations = self.search(value)
         return len(locations) - 1
 
-    def search(self , value):
-        locations = [["row" , "column"]]
+    def search(self, value):
+        locations = [["row", "column"]]
 
         row_count = 0
         column_count = 0
@@ -250,23 +266,21 @@ class Matrix:
                 for item in row:
                     column_count += 1
                     if item == value:
-                        locations.append([row_count , column_count])
-                
+                        locations.append([row_count, column_count])
+
                 column_count = 0
 
             row_count += 1
 
         return locations
-    
 
-    
-    def export_csv(self , path):
+    def export_csv(self, path):
         file = open(path, 'w')
         writer_obj = csv.writer(file)
         writer_obj.writerows(self.matrix)
         file.close()
 
-    def import_csv(self , path):
+    def import_csv(self, path):
         csv_matrix = []
         file = open(path, 'r')
         reader = csv.reader(file)
@@ -276,21 +290,21 @@ class Matrix:
 
         self.matrix = csv_matrix
 
-    def import_matrix(self , matrix):
+    def import_matrix(self, matrix):
         self.matrix = matrix
-        
-    def gen_table(self , rng , num):
-        self.matrix.append([i for i in range(1,num+1)])
 
-        for i in range(2,rng+1):
+    def gen_table(self, rng, num, filler="table"):
+        self.matrix[0] = ([i for i in range(1, num+1)])
+
+        for i in range(2, rng+1):
             row = []
-            for j in range(1,num+1):
-                row.append(j*i)
-            
+            for j in range(1, num+1):
+                if filler == "table":
+                    row.append(j*i)
+                else:
+                    row.append(filler)
+
             self.matrix.append(row)
-
-        
-
 
     def printf(self, format="simple"):
         if format == "simple":
@@ -300,7 +314,7 @@ class Matrix:
         elif format == "raw":
             print(self.matrix)
             return
-        
+
         print(
             tabulate(
                 self.matrix,
@@ -309,12 +323,12 @@ class Matrix:
             )
         )
 
-    def pretty_print(user_matrix , format="simple"):
+    def pretty_print(user_matrix, format="simple"):
         if format == "simple":
             formated = "psql"
         elif format == "fancy":
             formated = "fancy_grid"
-        
+
         print(
             tabulate(
                 user_matrix,
@@ -324,43 +338,79 @@ class Matrix:
         )
 
     def help():
-        
+
         print(
             tabulate([
-                ["Matrix        " , "Faster Way To Formulate Data.              " , "★  Important"]] , 
-                headers="firstrow" , tablefmt="fancy_grid")
+                ["Matrix        ", "Faster Way To Formulate Data.              ", "★  Important"]],
+                headers="firstrow", tablefmt="fancy_grid")
         )
 
         help_data = [
-            ["Method" , "Functionality"],
-            ["★  add_row" , "(*args) : items"],
-            ["★  add_column" , "(header) : header"],
-            ["★  insert" , "(value , row , column)"],
-            ["★  fetch" , "(row , column)"],
-            ["len" , "() : returns length of matrix"],
-            ["remove" , "(row , column)"],
-            ["reset" , "() : resets the matrix"],
-            ["★  search" , "(search item)"],
-            ["★  lock" , "() : locks the matrix"],
-            ["★  unlock" , "() : unlocks the matrix"],
-            ["row_result" , "(row_no , operation) : returns result of row operation"],
-            ["column_result" , "(column_name , operation) : returns result of column operation"],
-            ["★  printf" , "(format) : plain/fancy"],
-            ["pretty_print" , "(matrix , format) : plain/fancy"],
-            ["delete_row" , "(row)"],
-            ["delete_column" , "(column)"],
-            ["★  serialize" , "() : adds serial column"],
-            ["count" , "() : counts the occurance"],
-            ["★  row_data" , "(row) : returns row data"],
-            ["★  column_data" , "(column_name) : returns column data"],
-            ["export_csv" , "(path) : exports the matrix as csv "],
-            ["export_matrix" , "() : exports the matrix as 2d list "],
-            ["import_csv" , "(path) : imports csv as matrix "],
-            ["★  import_matrix" , "() : imports a 2d list as matrix "],
-            ["★  export_html" , "(path) : exports matrix as html tabe"],
-            ["★  help" , "Get Information About Matrix"]
-        ]    
+            ["Method", "Functionality"],
+            ["★  add_row", "(*args) : items"],
+            ["★  add_column", "(header) : header"],
+            ["★  insert", "(value , row , column)"],
+            ["★  fetch", "(row , column)"],
+            ["len", "() : returns length of matrix"],
+            ["remove", "(row , column)"],
+            ["reset", "() : resets the matrix"],
+            ["★  search", "(search item)"],
+            ["★  lock", "() : locks the matrix"],
+            ["★  unlock", "() : unlocks the matrix"],
+            ["row_result",
+                "(row_no , operation) : returns result of row operation"],
+            ["column_result",
+                "(column_name , operation) : returns result of column operation"],
+            ["★  printf", "(format) : plain/fancy"],
+            ["pretty_print", "(matrix , format) : plain/fancy"],
+            ["delete_row", "(row)"],
+            ["delete_column", "(column)"],
+            ["★  serialize", "() : adds serial column"],
+            ["count", "() : counts the occurance"],
+            ["★  row_data", "(row) : returns row data"],
+            ["★  column_data", "(column_name) : returns column data"],
+            ["export_csv", "(path) : exports the matrix as csv "],
+            ["export_matrix", "() : exports the matrix as 2d list "],
+            ["import_csv", "(path) : imports csv as matrix "],
+            ["★  import_matrix", "() : imports a 2d list as matrix "],
+            ["★  export_html", "(path) : exports matrix as html tabe"],
+            ["★  help", "Get Information About Matrix"]
+        ]
 
         print(
-            tabulate(help_data , headers="firstrow", tablefmt="fancy_grid")
+            tabulate(help_data, headers="firstrow", tablefmt="fancy_grid")
         )
+
+    def math(operator, m1, m2):
+        result = []
+
+        if operator == "+":
+            for row_no in range(m1.len("row")):
+                row1 = m1.row_data(row_no)
+                row2 = m2.row_data(row_no)
+
+                net_row = []
+
+                for item in range(len(row1)):
+                    net = row1[item] + row2[item]
+                    net_row.append(net)
+
+                result.append(net_row)
+
+        elif operator == "-":
+            for row_no in range(m1.len("row")):
+                row1 = m1.row_data(row_no)
+                row2 = m2.row_data(row_no)
+
+                net_row = []
+
+                for item in range(len(row1)):
+                    net = row1[item] - row2[item]
+                    net_row.append(net)
+
+                result.append(net_row)
+
+        matrix = Matrix()
+        matrix.import_matrix(result)
+
+        return matrix
